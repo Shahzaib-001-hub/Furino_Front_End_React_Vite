@@ -5,10 +5,14 @@ import Navbar from "../Components/Navbar/Navbar";
 import Footer from "../Components/Footer/Footer";
 
 import products from "../Data/Products";
+import { useCart } from "../Components/Context/CartContext";
 
 const SingleProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  // Cart
+  const { addToCart } = useCart();
 
   // Find product using URL ID
   const product = products.find(
@@ -28,6 +32,29 @@ const SingleProduct = () => {
     setSelectedImage(product?.image || "");
     setQuantity(1);
   }, [product]);
+
+  // Add product to cart
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    addToCart(product, quantity);
+  };
+
+  // Increase quantity
+  const increaseQuantity = () => {
+    setQuantity((prev) => prev + 1);
+  };
+
+  // Decrease quantity
+  const decreaseQuantity = () => {
+    setQuantity((prev) => {
+      if (prev > 1) {
+        return prev - 1;
+      }
+
+      return 1;
+    });
+  };
 
   // Product not found
   if (!product) {
@@ -55,30 +82,14 @@ const SingleProduct = () => {
     );
   }
 
-  // Increase quantity
-  const increaseQuantity = () => {
-    setQuantity((prev) => prev + 1);
-  };
-
-  // Decrease quantity
-  const decreaseQuantity = () => {
-    setQuantity((prev) => {
-      if (prev > 1) {
-        return prev - 1;
-      }
-
-      return 1;
-    });
-  };
-
   // Related products
   const relatedProducts = product.relatedProducts
-  ? product.relatedProducts
+    ? product.relatedProducts
       .map((relatedId) =>
         products.find((item) => item.id === relatedId)
       )
       .filter(Boolean)
-  : [];
+    : [];
 
   return (
     <>
@@ -87,9 +98,7 @@ const SingleProduct = () => {
       {/* Breadcrumb */}
       <section className="bg-[#F9F1E7] px-5 py-5 md:px-10 lg:px-20">
         <div className="mx-auto max-w-7xl">
-
           <div className="flex items-center gap-3 text-sm text-gray-500">
-
             <button
               onClick={() => navigate("/")}
               className="hover:text-black"
@@ -111,32 +120,25 @@ const SingleProduct = () => {
             <span className="text-gray-800">
               {product.name}
             </span>
-
           </div>
-
         </div>
       </section>
 
-
       {/* Product Details */}
       <section className="mx-auto max-w-7xl px-5 py-10 md:px-10 lg:px-20">
-
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
 
-          {/* LEFT SIDE - PRODUCT IMAGE */}
-
+          {/* LEFT SIDE */}
           <div className="flex gap-5">
 
             {/* Thumbnail */}
             <div className="w-20">
-
               <button
                 onClick={() => setSelectedImage(product.image)}
-                className={`mb-4 h-20 w-20 overflow-hidden rounded bg-[#F9F1E7] ${
-                  selectedImage === product.image
+                className={`mb-4 h-20 w-20 overflow-hidden rounded bg-[#F9F1E7] ${selectedImage === product.image
                     ? "ring-2 ring-[#b88b35]"
                     : ""
-                }`}
+                  }`}
               >
                 <img
                   src={product.image}
@@ -144,25 +146,19 @@ const SingleProduct = () => {
                   className="h-full w-full object-cover"
                 />
               </button>
-
             </div>
 
             {/* Main Image */}
             <div className="flex h-[450px] flex-1 items-center justify-center overflow-hidden rounded bg-[#F9F1E7]">
-
               <img
                 src={selectedImage}
                 alt={product.name}
                 className="h-full w-full object-contain"
               />
-
             </div>
-
           </div>
 
-
-          {/* RIGHT SIDE - PRODUCT INFO */}
-
+          {/* RIGHT SIDE */}
           <div>
 
             {/* Product Name */}
@@ -170,10 +166,8 @@ const SingleProduct = () => {
               {product.name}
             </h1>
 
-
             {/* Price */}
             <div className="mt-3 flex items-center gap-4">
-
               <span className="text-xl font-medium text-gray-500">
                 Rp {product.price}
               </span>
@@ -183,13 +177,10 @@ const SingleProduct = () => {
                   Rp {product.oldPrice}
                 </span>
               )}
-
             </div>
-
 
             {/* Rating */}
             <div className="mt-5 flex items-center gap-3">
-
               <div className="text-yellow-400">
                 ★ ★ ★ ★ ★
               </div>
@@ -197,19 +188,15 @@ const SingleProduct = () => {
               <span className="text-sm text-gray-400">
                 5 Customer Reviews
               </span>
-
             </div>
-
 
             {/* Description */}
             <p className="mt-6 max-w-xl text-sm leading-7 text-gray-600">
               {product.description}
             </p>
 
-
             {/* Quantity */}
             <div className="mt-8">
-
               <p className="mb-3 text-sm text-gray-500">
                 Quantity
               </p>
@@ -217,6 +204,7 @@ const SingleProduct = () => {
               <div className="flex w-fit items-center rounded border border-gray-400">
 
                 <button
+                  type="button"
                   onClick={decreaseQuantity}
                   className="px-4 py-3 text-gray-700 hover:bg-gray-100"
                 >
@@ -228,6 +216,7 @@ const SingleProduct = () => {
                 </span>
 
                 <button
+                  type="button"
                   onClick={increaseQuantity}
                   className="px-4 py-3 text-gray-700 hover:bg-gray-100"
                 >
@@ -235,20 +224,23 @@ const SingleProduct = () => {
                 </button>
 
               </div>
-
             </div>
-
 
             {/* Buttons */}
             <div className="mt-6 flex flex-wrap gap-4">
 
+              {/* ADD TO CART */}
               <button
+                type="button"
+                onClick={handleAddToCart}
                 className="rounded border border-gray-400 px-8 py-3 transition hover:bg-black hover:text-white"
               >
                 Add To Cart
               </button>
 
               <button
+                type="button"
+                onClick={() => navigate("/comparison")}
                 className="rounded border border-gray-400 px-8 py-3 transition hover:bg-black hover:text-white"
               >
                 + Compare
@@ -256,24 +248,20 @@ const SingleProduct = () => {
 
             </div>
 
-
             {/* Product Information */}
             <div className="mt-10 border-t pt-6">
 
               <div className="mb-3 flex text-sm text-gray-500">
-
                 <span className="w-24">
-                  SKU : 
+                  SKU :
                 </span>
 
                 <span>
                   : {product.SKU}
                 </span>
-
               </div>
 
               <div className="mb-3 flex text-sm text-gray-500">
-
                 <span className="w-24">
                   Category
                 </span>
@@ -281,11 +269,9 @@ const SingleProduct = () => {
                 <span>
                   : Furniture
                 </span>
-
               </div>
 
               <div className="flex text-sm text-gray-500">
-
                 <span className="w-24">
                   Tags
                 </span>
@@ -293,25 +279,18 @@ const SingleProduct = () => {
                 <span>
                   : Chair, Home, Furniture
                 </span>
-
               </div>
 
             </div>
-
           </div>
-
         </div>
-
       </section>
-
 
       {/* Description */}
       <section className="border-t">
-
         <div className="mx-auto max-w-7xl px-5 py-12 md:px-10 lg:px-20">
 
           <div className="border-b pb-5">
-
             <div className="flex flex-wrap justify-center gap-8">
 
               <button className="font-semibold text-gray-800">
@@ -327,7 +306,6 @@ const SingleProduct = () => {
               </button>
 
             </div>
-
           </div>
 
           <div className="mx-auto mt-8 max-w-5xl">
@@ -343,11 +321,8 @@ const SingleProduct = () => {
             </p>
 
           </div>
-
         </div>
-
       </section>
-
 
       {/* Related Products */}
       <section className="mx-auto max-w-7xl px-5 py-12 md:px-10 lg:px-20">
@@ -359,7 +334,6 @@ const SingleProduct = () => {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
 
           {relatedProducts.map((item) => (
-
             <div
               key={item.id}
               onClick={() => navigate(`/product/${item.id}`)}
@@ -367,17 +341,14 @@ const SingleProduct = () => {
             >
 
               <div className="h-[220px] overflow-hidden">
-
                 <img
                   src={item.image}
                   alt={item.name}
                   className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                 />
-
               </div>
 
               <div className="p-4">
-
                 <h3 className="font-bold text-gray-700">
                   {item.name}
                 </h3>
@@ -389,15 +360,12 @@ const SingleProduct = () => {
                 <p className="mt-2 font-bold text-gray-700">
                   Rp {item.price}
                 </p>
-
               </div>
 
             </div>
-
           ))}
 
         </div>
-
       </section>
 
       <Footer />

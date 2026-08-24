@@ -3,6 +3,7 @@ import Footer from "../Components/Footer/Footer";
 
 import ProductCard from "../Components/Products/ProductCard";
 import products from "../Data/Products";
+import Filterbar from "../Components/Filterbar/Filterbar"
 
 const Shop = () => {
   return (
@@ -16,7 +17,7 @@ const Shop = () => {
           className="relative bg-cover bg-center py-20"
           style={{
             backgroundImage:
-              "url('/images/breadcrumb-bg.jpg')",
+              "url('/breadcrumb.png')",
           }}
         >
 
@@ -45,7 +46,7 @@ const Shop = () => {
           </div>
 
         </section>
-
+<Filterbar />
 
         {/* Products */}
         <section className="mx-auto max-w-7xl px-6 py-12">
